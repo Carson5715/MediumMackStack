@@ -1,19 +1,23 @@
 using UnityEngine;
 
-public class PlateController : MonoBehaviour
+public class PlatformController : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    public float boundary = 3.5f; // Movement limit
 
     void Update()
     {
-        // Move the plate left and right with arrow keys
-        float horizontalInput = Input.GetAxis("Horizontal"); // Left and right arrow keys or A/D keys
+        // Get player input (arrow keys or A/D keys)
+        float horizontalInput = Input.GetAxis("Horizontal");
 
-        // Move the plate accordingly
+        // Calculate new position with movement constraints
         Vector3 newPosition = transform.position + Vector3.right * horizontalInput * moveSpeed * Time.deltaTime;
+        newPosition.x = Mathf.Clamp(newPosition.x, -boundary, boundary); // Restrict movement within boundaries
+
+        // Apply movement to platform
         transform.position = newPosition;
 
-        // Move all the objects in the stack together
+        // Move all objects in the stack together
         FallingObject.MoveStack(transform.position);
     }
 }
