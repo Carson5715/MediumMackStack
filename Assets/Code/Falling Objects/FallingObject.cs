@@ -8,8 +8,8 @@ public class FallingObject : MonoBehaviour
     private static List<GameObject> stack = new List<GameObject>();  
     private Rigidbody rb;
     
-    // Stores the horizontal (x and z) offset relative to the plate so the object moves with the stack.
-    private Vector3 originalOffset;
+    // Stores the horizontal (x and z) offset relative to the plate at the moment of collision.
+    public Vector3 originalOffset;
 
     void Start()
     {
@@ -26,20 +26,10 @@ public class FallingObject : MonoBehaviour
                 return;
 
             snapped = true;
-            
-            // Adjust only the vertical (y) position based on the collision point.
-            Collider myCollider = GetComponent<Collider>();
-            if (myCollider != null)
-            {
-                Vector3 pos = transform.position;
-                pos.y = contact.point.y + myCollider.bounds.extents.y;
-                transform.position = pos;
-            }
-            
             stack.Add(gameObject);
             rb.isKinematic = true;
             
-            // Save only the horizontal (x and z) offset relative to the plate.
+            // Save the horizontal (x and z) offset relative to the plate.
             GameObject plate = GameObject.FindGameObjectWithTag("Plate");
             if (plate != null)
             {
@@ -58,16 +48,54 @@ public class FallingObject : MonoBehaviour
 
     public static void MoveStack(Vector3 platePosition)
     {
+        // Use the current wobble offset from PlateController.
+        float wobbleOffset = PlateController.Instance != null ? PlateController.Instance.currentWobble.x : 0f;
         foreach (GameObject obj in stack)
         {
             if (obj != null)
             {
                 FallingObject fo = obj.GetComponent<FallingObject>();
                 Vector3 pos = obj.transform.position;
-                // Update only the horizontal coordinates relative to the plate.
-                pos.x = platePosition.x + fo.originalOffset.x;
+                // Update the horizontal position: plate position + the object's original offset + the global wobble.
+                pos.x = platePosition.x + fo.originalOffset.x + wobbleOffset;
                 pos.z = platePosition.z + fo.originalOffset.z;
                 obj.transform.position = pos;
+            }
+        }
+    }
+
+    public static int GetStackCount()
+    {
+        return stack.Count;
+    }
+
+    // Returns the total off-center offset (sum of the absolute x offsets) for all snapped objects.
+    public static float GetTotalOffset()
+    {
+        float totalOffset = 0f;
+        foreach (GameObject obj in stack)
+        {
+            if (obj != null)
+            {
+                FallingObject fo = obj.GetComponent<FallingObject>();
+                totalOffset += Mathf.Abs(fo.originalOffset.x);
+            }
+        }
+        return totalOffset;
+    }
+
+    // Lose condition: turn off kinematic on all stacked objects so physics takes over.
+    public static void ReleaseStack()
+    {
+        foreach (GameObject obj in stack)
+        {
+            if (obj != null)
+            {
+                Rigidbody rb = obj.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    rb.isKinematic = false;
+                }
             }
         }
     }
