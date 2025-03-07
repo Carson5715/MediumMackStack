@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 8312585267307137435}
   - component: {fileID: 406173884819788096}
   - component: {fileID: 1987708224458289377}
-  - component: {fileID: 6263382951646230864}
   - component: {fileID: 8151431802880449568}
   - component: {fileID: 1256388170546853687}
+  - component: {fileID: 4976029177459982602}
   m_Layer: 0
   m_Name: Hamburger Bun
   m_TagString: FallingObject
@@ -89,27 +89,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6263382951646230864
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3877818755417904088}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &8151431802880449568
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -149,3 +128,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73e9bc9b0d75431438a16594b8e36d39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!64 &4976029177459982602
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3877818755417904088}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
