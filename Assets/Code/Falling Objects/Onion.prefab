@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
       propertyPath: m_LocalScale.y
-      value: 43.211792
+      value: 116.84469
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
       propertyPath: m_LocalScale.z
@@ -22,15 +22,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.223
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.271
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.679
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -68,8 +68,89 @@ PrefabInstance:
       propertyPath: m_Name
       value: Onion
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
+      propertyPath: m_TagString
+      value: FallingObject
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -4084736741795178398}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8049169434482572703}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2384172341614492172}
   m_SourcePrefab: {fileID: 100100000, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
+--- !u!1 &1481375878929773625 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a2b6f9cd58a91de4a838795bbf3fb87d, type: 3}
+  m_PrefabInstance: {fileID: 1751775265165265256}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &-4084736741795178398
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481375878929773625}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.020000003, y: 0.0013595652, z: 0.020000005}
+  m_Center: {x: 0.0000000013969839, y: 0, z: -0.0000000018626451}
+--- !u!54 &8049169434482572703
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481375878929773625}
+  serializedVersion: 4
+  m_Mass: 5.63
+  m_Drag: 2
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 8
+  m_CollisionDetection: 0
+--- !u!114 &2384172341614492172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481375878929773625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e9bc9b0d75431438a16594b8e36d39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originalOffset: {x: 0, y: 0, z: 0}
+  collisionTolerance: 0.3
+  contactMarginThresholdFactor: 1.25

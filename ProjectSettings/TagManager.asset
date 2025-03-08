@@ -6,6 +6,7 @@ TagManager:
   tags:
   - FallingObject
   - Plate
+  - DespawnFallObj
   layers:
   - Default
   - TransparentFX
