@@ -53,9 +53,15 @@ public class PlateController : MonoBehaviour
             transform.position = newPosition;
         }
         
-        // Calculate total off-center offset and wobble.
+        // Calculate total off-center offset.
         float totalOffset = FallingObject.GetTotalOffset();
+        // Evaluate the wobble amplitude based on the total offset.
         float amplitude = wobbleCurve.Evaluate(totalOffset);
+        // If win condition is triggered, disable the wobble.
+        if (winConditionTriggered)
+        {
+            amplitude = 0f;
+        }
         currentWobble = new Vector3(Mathf.Sin(Time.time * wobbleFrequency) * amplitude, 0, 0);
         
         // Trigger lose condition if the wobble amplitude is too high.
@@ -123,6 +129,7 @@ public class PlateController : MonoBehaviour
     {
         if (mainCamera != null)
         {
+            // If win condition hasn't been triggered, follow the stack normally.
             if (!winConditionTriggered)
             {
                 float highestPoint = FallingObject.GetHighestPoint();
@@ -136,9 +143,9 @@ public class PlateController : MonoBehaviour
                 Vector3 targetCamPos = new Vector3(currentCamPos.x, targetY, currentCamPos.z);
                 mainCamera.transform.position = Vector3.Lerp(currentCamPos, targetCamPos, Time.deltaTime * cameraFollowSpeed);
             }
+            // After win condition, slowly pan the camera upward to follow the top of the stack.
             else
             {
-                // After win condition, slowly pan the camera upward to follow the top of the stack.
                 float highestPoint = FallingObject.GetHighestPoint();
                 if (highestPoint == float.MinValue)
                     highestPoint = mainCamera.transform.position.y;
