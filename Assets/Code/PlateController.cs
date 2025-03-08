@@ -5,10 +5,11 @@ public class PlateController : MonoBehaviour
 {
     public float moveSpeed = 5f;
     private float boundary = 3.5f;
+
     // UI elements.
     public TextMeshProUGUI stackCountText;
     public TextMeshProUGUI highestPointText;
-    public TextMeshProUGUI wobbleText;  // Displays current wobble amplitude.
+    public TextMeshProUGUI wobbleText;
     
     // Wobble settings.
     public float wobbleFrequency = 20f;
@@ -26,9 +27,9 @@ public class PlateController : MonoBehaviour
     public Spawner spawner;                    // Reference to the spawner to stop it.
     public GameObject winStackContainer;       // Destination for teleporting the player.
     public Transform winCameraTarget;          // Target transform for the camera when winning.
-    public float winCameraPanSpeed = 1f;         // Speed at which the camera pans upward after win.
+    public float winCameraPanSpeed = 1f;       // Speed at which the camera pans upward after win.
     
-    // New public variables: objects to disable on win.
+    // Objects to disable on win.
     public GameObject disableObject1;
     public GameObject disableObject2;
     
@@ -86,7 +87,7 @@ public class PlateController : MonoBehaviour
         if (highestPointText != null)
             highestPointText.text = "Highest: " + highestPoint.ToString("F2");
         
-        // Update UI: current wobble amplitude.
+        // Update UI with wobble
         if (wobbleText != null)
             wobbleText.text = "Wobble: " + amplitude.ToString("F2");
         
