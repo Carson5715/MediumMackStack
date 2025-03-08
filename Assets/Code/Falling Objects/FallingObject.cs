@@ -25,13 +25,19 @@ public class FallingObject : MonoBehaviour
     
     void OnCollisionEnter(Collision collision)
     {
+        // Check if the falling object hits an object tagged "DespawnFallObj".
+        if (collision.gameObject.CompareTag("DespawnFallObj"))
+        {
+            // Instead of immediately destroying, schedule returning the object to the pool after 5 seconds.
+            Invoke("ReturnToPool", 5f);
+            return;
+        }
+        
         if (!snapped && (collision.gameObject.CompareTag("FallingObject") || collision.gameObject.CompareTag("Plate")))
         {
             ContactPoint contact = collision.contacts[0];
             if (contact.normal.y <= 0.5f)
-            {
                 return;
-            }
             
             // Check if the contact is too far from the object's center on the X axis.
             Collider myCollider = GetComponent<Collider>();
@@ -80,6 +86,20 @@ public class FallingObject : MonoBehaviour
             {
                 originalOffset = Vector3.zero;
             }
+        }
+    }
+    
+    // This method returns the object to the pool.
+    private void ReturnToPool()
+    {
+        ObjectPoolManager poolManager = GameObject.FindObjectOfType<ObjectPoolManager>();
+        if (poolManager != null)
+        {
+            poolManager.ReturnObjectToPool(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
     
