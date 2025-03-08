@@ -9,7 +9,7 @@ public class Spawner : MonoBehaviour
     public float spawnInterval = 2.0f;
 
     // Range along the x-axis for random spawn positions
-    public float xRange = 5f;
+    public float xRange = 3.25f;
 
     // Y-coordinate for the spawn position (e.g., top of the screen)
     public float spawnY = 10f;
