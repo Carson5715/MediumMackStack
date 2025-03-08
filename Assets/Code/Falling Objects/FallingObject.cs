@@ -29,7 +29,9 @@ public class FallingObject : MonoBehaviour
         {
             ContactPoint contact = collision.contacts[0];
             if (contact.normal.y <= 0.5f)
+            {
                 return;
+            }
             
             // Check if the contact is too far from the object's center on the X axis.
             Collider myCollider = GetComponent<Collider>();
@@ -37,7 +39,7 @@ public class FallingObject : MonoBehaviour
             {
                 float centerX = myCollider.bounds.center.x;
                 float halfWidth = myCollider.bounds.extents.x;
-                if (Mathf.Abs(contact.point.x - centerX) > halfWidth * contactMarginThresholdFactor)
+                if (Mathf.Abs(collision.collider.bounds.center.x - centerX) > halfWidth * contactMarginThresholdFactor)
                 {
                     return; // Ignore collision if the contact is outside the acceptable central region.
                 }
@@ -50,7 +52,10 @@ public class FallingObject : MonoBehaviour
                 if (collision.gameObject.CompareTag("FallingObject"))
                 {
                     if (contact.point.y < highestPoint - collisionTolerance)
+                    {
+                        Debug.Log("Scenario 3");
                         return;
+                    }
                 }
                 else if (collision.gameObject.CompareTag("Plate"))
                 {
