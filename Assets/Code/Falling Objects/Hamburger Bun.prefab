@@ -128,6 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73e9bc9b0d75431438a16594b8e36d39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalOffset: {x: 0, y: 0, z: 0}
+  collisionTolerance: 0.3
 --- !u!64 &4976029177459982602
 MeshCollider:
   m_ObjectHideFlags: 0

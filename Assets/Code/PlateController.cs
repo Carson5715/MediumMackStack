@@ -4,10 +4,10 @@ using TMPro;
 public class PlateController : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    // Public TextMeshProUGUI to display the current total offset.
+    // UI elements to display information.
     public TextMeshProUGUI stackCountText;
-    // Public TextMeshProUGUI to display the highest point of the stack.
     public TextMeshProUGUI highestPointText;
+    public TextMeshProUGUI wobbleText;  // New: Displays current wobble amplitude.
     
     // Wobble frequency (editable in the inspector).
     public float wobbleFrequency = 20f;
@@ -17,7 +17,7 @@ public class PlateController : MonoBehaviour
     // The current wobble offset (can be referenced later, e.g., for wind mechanics).
     public Vector3 currentWobble { get; private set; } = Vector3.zero;
     
-    // Public threshold for triggering the lose condition (if wobble amplitude gets too high).
+    // Public threshold for triggering the lose condition.
     public float loseWobbleThreshold = 0.15f;
     
     // Camera follow settings.
@@ -45,7 +45,7 @@ public class PlateController : MonoBehaviour
         
         // Compute the total off-center offset from the stack.
         float totalOffset = FallingObject.GetTotalOffset();
-        // Evaluate the wobble amplitude based on the total offset using the AnimationCurve.
+        // Evaluate the wobble amplitude based on the total offset.
         float amplitude = wobbleCurve.Evaluate(totalOffset);
         // Compute the wobble offset using a sine wave.
         currentWobble = new Vector3(Mathf.Sin(Time.time * wobbleFrequency) * amplitude, 0, 0);
@@ -55,17 +55,16 @@ public class PlateController : MonoBehaviour
         {
             gameLost = true;
             FallingObject.ReleaseStack();
-            // Quit the game after a short delay.
             Invoke("QuitGame", 1f);
         }
         
         // Update the horizontal positions of stacked objects.
         FallingObject.MoveStack(transform.position);
         
-        // Update the UI with the current total offset.
+        // Update the UI with the number of items in the stack.
         if (stackCountText != null)
         {
-            stackCountText.text = totalOffset.ToString("F2");
+            stackCountText.text = "Items: " + FallingObject.GetStackCount().ToString();
         }
         
         // Update the UI with the highest point of the stack.
@@ -73,6 +72,12 @@ public class PlateController : MonoBehaviour
         if (highestPointText != null)
         {
             highestPointText.text = "Highest: " + highestPoint.ToString("F2");
+        }
+        
+        // Update the UI with the current wobble amplitude.
+        if (wobbleText != null)
+        {
+            wobbleText.text = "Wobble: " + amplitude.ToString("F2");
         }
     }
     
@@ -82,12 +87,11 @@ public class PlateController : MonoBehaviour
         {
             // Get the current highest point of the stack.
             float highestPoint = FallingObject.GetHighestPoint();
-            // If there are no snapped objects, default to the camera's current Y minus offset.
             if (highestPoint == float.MinValue)
             {
                 highestPoint = mainCamera.transform.position.y - cameraYOffset;
             }
-            // Compute the desired camera Y as the highest point plus a fixed offset.
+            // Compute the desired camera Y as the highest point plus an offset.
             float desiredY = highestPoint + cameraYOffset;
             // Only allow the camera to move upward.
             float targetY = Mathf.Max(mainCamera.transform.position.y, desiredY);
