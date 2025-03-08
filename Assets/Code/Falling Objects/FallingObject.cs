@@ -14,6 +14,10 @@ public class FallingObject : MonoBehaviour
     // Public tolerance for collision height.
     public float collisionTolerance = 0.1f;
     
+    // Public variable: Factor (0 to 1) defining how close to the center on the X axis the contact must be.
+    // For example, 0.5 means the contact point must be within 50% of the collider's half-width from the center.
+    public float contactMarginThresholdFactor = 0.5f;
+    
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -26,6 +30,18 @@ public class FallingObject : MonoBehaviour
             ContactPoint contact = collision.contacts[0];
             if (contact.normal.y <= 0.5f)
                 return;
+            
+            // Check if the contact is too far from the object's center on the X axis.
+            Collider myCollider = GetComponent<Collider>();
+            if (myCollider != null)
+            {
+                float centerX = myCollider.bounds.center.x;
+                float halfWidth = myCollider.bounds.extents.x;
+                if (Mathf.Abs(contact.point.x - centerX) > halfWidth * contactMarginThresholdFactor)
+                {
+                    return; // Ignore collision if the contact is outside the acceptable central region.
+                }
+            }
             
             // If there are already snapped objects, only accept collisions at the top.
             if (GetStackCount() > 0)

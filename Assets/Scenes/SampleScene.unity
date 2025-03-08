@@ -2306,6 +2306,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originalOffset: {x: 0, y: 0, z: 0}
   collisionTolerance: 0.1
+  contactMarginThresholdFactor: 0.5
 --- !u!54 &935617280
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4281,7 +4282,7 @@ MonoBehaviour:
   spawner: {fileID: 813240286}
   winStackContainer: {fileID: 1403406040}
   winCameraTarget: {fileID: 948500910}
-  winCameraPanSpeed: 0.1
+  winCameraPanSpeed: 1
   disableObject1: {fileID: 48573263}
   disableObject2: {fileID: 1635730852}
 --- !u!54 &1741818296
@@ -4325,6 +4326,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originalOffset: {x: 0, y: 0, z: 0}
   collisionTolerance: 0.1
+  contactMarginThresholdFactor: 0.5
 --- !u!1001 &1743178592
 PrefabInstance:
   m_ObjectHideFlags: 0

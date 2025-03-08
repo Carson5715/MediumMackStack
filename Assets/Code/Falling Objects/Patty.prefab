@@ -130,6 +130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originalOffset: {x: 0, y: 0, z: 0}
   collisionTolerance: 0.3
+  contactMarginThresholdFactor: 0.9
 --- !u!64 &-2549917603775923888
 MeshCollider:
   m_ObjectHideFlags: 0
