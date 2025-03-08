@@ -4,6 +4,7 @@ using TMPro;
 public class PlateController : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    private float boundary = 3.5f;
     // UI elements.
     public TextMeshProUGUI stackCountText;
     public TextMeshProUGUI highestPointText;
@@ -50,6 +51,7 @@ public class PlateController : MonoBehaviour
         {
             float horizontalInput = Input.GetAxis("Horizontal");
             Vector3 newPosition = transform.position + Vector3.right * horizontalInput * moveSpeed * Time.deltaTime;
+            newPosition.x = Mathf.Clamp(newPosition.x, -boundary, boundary);
             transform.position = newPosition;
         }
         
