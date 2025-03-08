@@ -25,8 +25,11 @@ public class PlateController : MonoBehaviour
     public Spawner spawner;                    // Reference to the spawner to stop it.
     public GameObject winStackContainer;       // Destination for teleporting the player.
     public Transform winCameraTarget;          // Target transform for the camera when winning.
-    // New: Speed at which the camera pans upward after win condition.
-    public float winCameraPanSpeed = 1f;
+    public float winCameraPanSpeed = 1f;         // Speed at which the camera pans upward after win.
+    
+    // New public variables: objects to disable on win.
+    public GameObject disableObject1;
+    public GameObject disableObject2;
     
     // Internal flags.
     private bool gameLost = false;
@@ -97,11 +100,21 @@ public class PlateController : MonoBehaviour
                 transform.position = winStackContainer.transform.position;
             }
             
-            // Immediately teleport the camera to the winCameraTarget.
+            // Teleport the camera to the win camera target.
             if (mainCamera != null && winCameraTarget != null)
             {
                 mainCamera.transform.position = winCameraTarget.position;
                 mainCamera.transform.rotation = winCameraTarget.rotation;
+            }
+            
+            // Disable the two designated objects.
+            if (disableObject1 != null)
+            {
+                disableObject1.SetActive(false);
+            }
+            if (disableObject2 != null)
+            {
+                disableObject2.SetActive(false);
             }
         }
     }
@@ -110,7 +123,6 @@ public class PlateController : MonoBehaviour
     {
         if (mainCamera != null)
         {
-            // If win condition hasn't been triggered, follow the stack normally.
             if (!winConditionTriggered)
             {
                 float highestPoint = FallingObject.GetHighestPoint();
@@ -124,11 +136,10 @@ public class PlateController : MonoBehaviour
                 Vector3 targetCamPos = new Vector3(currentCamPos.x, targetY, currentCamPos.z);
                 mainCamera.transform.position = Vector3.Lerp(currentCamPos, targetCamPos, Time.deltaTime * cameraFollowSpeed);
             }
-            // After win condition, slowly pan the camera upward to follow the top of the stack.
             else
             {
+                // After win condition, slowly pan the camera upward to follow the top of the stack.
                 float highestPoint = FallingObject.GetHighestPoint();
-                // If no snapped object, keep current camera Y.
                 if (highestPoint == float.MinValue)
                     highestPoint = mainCamera.transform.position.y;
                 
