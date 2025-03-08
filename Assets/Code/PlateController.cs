@@ -4,8 +4,10 @@ using TMPro;
 public class PlateController : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    // Public TextMeshProUGUI to display the current total offset (for debugging or UI).
+    // Public TextMeshProUGUI to display the current total offset.
     public TextMeshProUGUI stackCountText;
+    // Public TextMeshProUGUI to display the highest point of the stack.
+    public TextMeshProUGUI highestPointText;
     
     // Wobble frequency (editable in the inspector).
     public float wobbleFrequency = 20f;
@@ -17,6 +19,11 @@ public class PlateController : MonoBehaviour
     
     // Public threshold for triggering the lose condition (if wobble amplitude gets too high).
     public float loseWobbleThreshold = 0.15f;
+    
+    // Camera follow settings.
+    public Camera mainCamera;
+    public float cameraFollowSpeed = 2f;
+    public float cameraYOffset = 5f;
     
     // Flag to ensure the lose condition is triggered only once.
     private bool gameLost = false;
@@ -60,13 +67,40 @@ public class PlateController : MonoBehaviour
         {
             stackCountText.text = totalOffset.ToString("F2");
         }
+        
+        // Update the UI with the highest point of the stack.
+        float highestPoint = FallingObject.GetHighestPoint();
+        if (highestPointText != null)
+        {
+            highestPointText.text = "Highest: " + highestPoint.ToString("F2");
+        }
     }
     
-    // This method quits the game.
+    void LateUpdate()
+    {
+        if (mainCamera != null)
+        {
+            // Get the current highest point of the stack.
+            float highestPoint = FallingObject.GetHighestPoint();
+            // If there are no snapped objects, default to the camera's current Y minus offset.
+            if (highestPoint == float.MinValue)
+            {
+                highestPoint = mainCamera.transform.position.y - cameraYOffset;
+            }
+            // Compute the desired camera Y as the highest point plus a fixed offset.
+            float desiredY = highestPoint + cameraYOffset;
+            // Only allow the camera to move upward.
+            float targetY = Mathf.Max(mainCamera.transform.position.y, desiredY);
+            
+            Vector3 currentCamPos = mainCamera.transform.position;
+            Vector3 targetCamPos = new Vector3(currentCamPos.x, targetY, currentCamPos.z);
+            mainCamera.transform.position = Vector3.Lerp(currentCamPos, targetCamPos, Time.deltaTime * cameraFollowSpeed);
+        }
+    }
+    
     void QuitGame()
     {
 #if UNITY_EDITOR
-        // For testing in the Unity Editor.
         UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
