@@ -1,5 +1,7 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
+
 
 public class PlateController : MonoBehaviour
 {
@@ -30,8 +32,7 @@ public class PlateController : MonoBehaviour
     public float winCameraPanSpeed = 1f;       // Speed at which the camera pans upward after win.
     
     // Objects to disable on win.
-    public GameObject disableObject1;
-    public GameObject disableObject2;
+    public List<GameObject> disableObjects;
     
     // Internal flags.
     private bool gameLost = false;
@@ -115,15 +116,14 @@ public class PlateController : MonoBehaviour
                 mainCamera.transform.position = winCameraTarget.position;
                 mainCamera.transform.rotation = winCameraTarget.rotation;
             }
-            
-            // Disable the two designated objects.
-            if (disableObject1 != null)
+
+            foreach (GameObject obj in disableObjects)
             {
-                disableObject1.SetActive(false);
-            }
-            if (disableObject2 != null)
-            {
-                disableObject2.SetActive(false);
+                // Disable the two designated objects.
+                if (obj != null)
+                {
+                    obj.SetActive(false);
+                }
             }
         }
     }
