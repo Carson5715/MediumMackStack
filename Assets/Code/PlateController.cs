@@ -1,7 +1,8 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
 using System.Collections.Generic;
-
 
 public class PlateController : MonoBehaviour
 {
@@ -29,14 +30,27 @@ public class PlateController : MonoBehaviour
     public Spawner spawner;                    // Reference to the spawner to stop it.
     public GameObject winStackContainer;       // Destination for teleporting the player.
     public Transform winCameraTarget;          // Target transform for the camera when winning.
-    public float winCameraPanSpeed = 1f;       // Speed at which the camera pans upward after win.
+    public float winCameraPanSpeed = 1f;         // Speed at which the camera pans upward after win.
     
     // Objects to disable on win.
     public List<GameObject> disableObjects;
     
+    // New: Public variables for win spawn.
+    public GameObject winSpawnPrefab;          // The prefab to spawn when win condition is reached.
+    public Transform winSpawnLocation;         // The location at which to spawn the prefab.
+    
+    // Scene names to load.
+    public string winSceneName = "WinScene";
+    public string loseSceneName = "LoseScene";
+    
+    // New: How long to wait after spawning the win object before loading the win scene.
+    public float winWaitTime = 5f;
+    
     // Internal flags.
     private bool gameLost = false;
     private bool winConditionTriggered = false;
+    private bool winSceneLoaded = false;
+    private bool loseSceneLoaded = false;
     
     // Singleton instance.
     public static PlateController Instance { get; private set; }
@@ -73,7 +87,11 @@ public class PlateController : MonoBehaviour
         {
             gameLost = true;
             FallingObject.ReleaseStack();
-            Invoke("QuitGame", 1f);
+            if (!loseSceneLoaded)
+            {
+                loseSceneLoaded = true;
+                Invoke("LoadLoseScene", 1f);
+            }
         }
         
         // Update positions of stacked objects.
@@ -88,7 +106,7 @@ public class PlateController : MonoBehaviour
         if (highestPointText != null)
             highestPointText.text = "Highest: " + highestPoint.ToString("F2");
         
-        // Update UI with wobble
+        // Update UI: wobble.
         if (wobbleText != null)
             wobbleText.text = "Wobble: " + amplitude.ToString("F2");
         
@@ -116,10 +134,10 @@ public class PlateController : MonoBehaviour
                 mainCamera.transform.position = winCameraTarget.position;
                 mainCamera.transform.rotation = winCameraTarget.rotation;
             }
-
+            
+            // Disable the designated objects.
             foreach (GameObject obj in disableObjects)
             {
-                // Disable the two designated objects.
                 if (obj != null)
                 {
                     obj.SetActive(false);
@@ -156,16 +174,32 @@ public class PlateController : MonoBehaviour
                 Vector3 currentCamPos = mainCamera.transform.position;
                 Vector3 targetCamPos = new Vector3(currentCamPos.x, highestPoint + cameraYOffset, currentCamPos.z);
                 mainCamera.transform.position = Vector3.Lerp(currentCamPos, targetCamPos, Time.deltaTime * winCameraPanSpeed);
+                
+                // Once the camera is nearly at the target, spawn the win object, wait, then load the win scene.
+                if (!winSceneLoaded && Mathf.Abs(mainCamera.transform.position.y - (highestPoint + cameraYOffset)) < 0.1f)
+                {
+                    winSceneLoaded = true;
+                    StartCoroutine(SpawnAndWaitAndLoadWinScene());
+                }
             }
         }
     }
     
-    void QuitGame()
+    IEnumerator SpawnAndWaitAndLoadWinScene()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        // Spawn the win object at the specified spawn location.
+        if (winSpawnPrefab != null && winSpawnLocation != null)
+        {
+            Instantiate(winSpawnPrefab, winSpawnLocation.position, winSpawnLocation.rotation);
+        }
+        // Wait for winWaitTime seconds.
+        yield return new WaitForSeconds(winWaitTime);
+        // Load the win scene.
+        SceneManager.LoadScene(winSceneName);
+    }
+    
+    void LoadLoseScene()
+    {
+        SceneManager.LoadScene(loseSceneName);
     }
 }
