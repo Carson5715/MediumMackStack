@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.Timeline.Actions;
 
 public class FallingObject : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class FallingObject : MonoBehaviour
     // List tracking all snapped objects.
     private static List<GameObject> stack = new List<GameObject>();  
     private Rigidbody rb;
+    public TrailRenderer trail;
     
     // Horizontal offset relative to the plate at collision time.
     public Vector3 originalOffset;
@@ -21,6 +23,11 @@ public class FallingObject : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        trail = GetComponent<TrailRenderer>();
+        if(trail != null)
+        {
+            trail.emitting = true;
+        }
     }
     
     void OnCollisionEnter(Collision collision)
@@ -30,6 +37,10 @@ public class FallingObject : MonoBehaviour
         {
             // Instead of immediately destroying, schedule returning the object to the pool after 5 seconds.
             Invoke("ReturnToPool", 5f);
+            if (trail != null)
+            {
+                trail.emitting = false;
+            }
             return;
         }
         
@@ -72,7 +83,11 @@ public class FallingObject : MonoBehaviour
             snapped = true;
             stack.Add(gameObject);
             rb.isKinematic = true;
-            
+            if (trail != null)
+            {
+                trail.emitting = false;
+            }
+
             GameObject plate = GameObject.FindGameObjectWithTag("Plate");
             if (plate != null)
             {
