@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.Timeline.Actions;
 
 public class FallingObject : MonoBehaviour
 {
@@ -8,7 +7,8 @@ public class FallingObject : MonoBehaviour
     // List tracking all snapped objects.
     private static List<GameObject> stack = new List<GameObject>();  
     private Rigidbody rb;
-    public TrailRenderer trail;
+    private TrailRenderer trail;
+    public ParticleSystem particle;
     
     // Horizontal offset relative to the plate at collision time.
     public Vector3 originalOffset;
@@ -24,7 +24,9 @@ public class FallingObject : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         trail = GetComponent<TrailRenderer>();
-        if(trail != null)
+        particle = GetComponentInChildren<ParticleSystem>();
+
+        if (trail != null)
         {
             trail.emitting = true;
         }
@@ -41,6 +43,9 @@ public class FallingObject : MonoBehaviour
             {
                 trail.emitting = false;
             }
+            else if (particle != null)
+                particle.Stop();
+
             return;
         }
         
@@ -87,6 +92,8 @@ public class FallingObject : MonoBehaviour
             {
                 trail.emitting = false;
             }
+            else if (particle != null)
+                particle.Stop();
 
             GameObject plate = GameObject.FindGameObjectWithTag("Plate");
             if (plate != null)

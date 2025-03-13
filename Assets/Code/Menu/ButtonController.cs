@@ -54,7 +54,7 @@ public class ButtonController : MonoBehaviour
         if (buttonType == ButtonType.Play)
         {
             // Replace "GameScene" with your actual game scene name.
-            SceneManager.LoadScene("Cutscene1");
+            SceneManager.LoadScene("RickyScene");
         }
         else if (buttonType == ButtonType.Quit)
         {
