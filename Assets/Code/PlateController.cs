@@ -54,10 +54,19 @@ public class PlateController : MonoBehaviour
     
     // Singleton instance.
     public static PlateController Instance { get; private set; }
-    
+
     void Awake()
     {
         Instance = this;
+    }
+    
+    // Enable the gyroscope if available.
+    void Start()
+    {
+        if (SystemInfo.supportsGyroscope)
+        {
+            Input.gyro.enabled = true;
+        }
     }
     
     void Update()
@@ -65,7 +74,31 @@ public class PlateController : MonoBehaviour
         // Only allow player movement if win condition hasn't been triggered.
         if (!winConditionTriggered)
         {
-            float horizontalInput = Input.GetAxis("Horizontal");
+            float horizontalInput = 0f;
+            
+            // Use gyroscope input if supported.
+            if (SystemInfo.supportsGyroscope)
+            {
+                // Get the device's gyroscope attitude.
+                Quaternion deviceRotation = Input.gyro.attitude;
+                // Adjust for Unity's coordinate system.
+                deviceRotation = Quaternion.Euler(90f, 0f, 0f) * new Quaternion(-deviceRotation.x, -deviceRotation.y, deviceRotation.z, deviceRotation.w);
+                // Extract the tilt angle around the Z-axis.
+                float tiltAngle = deviceRotation.eulerAngles.z;
+                // Convert from 0–360 to -180–180.
+                if (tiltAngle > 180f)
+                    tiltAngle -= 360f;
+                // Define a maximum tilt angle (in degrees) for full left/right movement.
+                float maxTilt = 10f;
+                // Normalize the tilt so that full left/right (i.e., -maxTilt to maxTilt) maps to -1 to 1.
+                horizontalInput = Mathf.Clamp(tiltAngle, -maxTilt, maxTilt) / maxTilt;
+            }
+            else
+            {
+                // Fallback to keyboard input if no gyroscope is available.
+                horizontalInput = Input.GetAxis("Horizontal");
+            }
+            
             Vector3 newPosition = transform.position + Vector3.right * horizontalInput * moveSpeed * Time.deltaTime;
             newPosition.x = Mathf.Clamp(newPosition.x, -boundary, boundary);
             transform.position = newPosition;

@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
-public class ButtonController : MonoBehaviour
+public class ButtonController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
     public enum ButtonType { Play, Quit }
     public ButtonType buttonType;
@@ -12,7 +13,6 @@ public class ButtonController : MonoBehaviour
 
     // Store the original color.
     private Color originalColor;
-
     private Renderer rend;
 
     void Start()
@@ -25,8 +25,55 @@ public class ButtonController : MonoBehaviour
         }
     }
 
-    // When the mouse enters, change to the highlight color.
+    // ======= Event System Methods for Touch =======
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Highlight();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        Unhighlight();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        Press();
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        Highlight();
+        ExecuteAction();
+    }
+
+    // ======= Legacy Mouse Support (Optional for Editor) =======
+
     void OnMouseEnter()
+    {
+        Highlight();
+    }
+
+    void OnMouseExit()
+    {
+        Unhighlight();
+    }
+
+    void OnMouseDown()
+    {
+        Press();
+    }
+
+    void OnMouseUp()
+    {
+        Highlight();
+        ExecuteAction();
+    }
+
+    // ======= Helper Methods =======
+
+    private void Highlight()
     {
         if (rend != null)
         {
@@ -34,8 +81,7 @@ public class ButtonController : MonoBehaviour
         }
     }
 
-    // When the mouse exits, revert to the original color.
-    void OnMouseExit()
+    private void Unhighlight()
     {
         if (rend != null)
         {
@@ -43,17 +89,19 @@ public class ButtonController : MonoBehaviour
         }
     }
 
-    // When the button is clicked, change to a pressed color and perform the action.
-    void OnMouseDown()
+    private void Press()
     {
         if (rend != null)
         {
             rend.material.color = pressedColor;
         }
+    }
 
+    private void ExecuteAction()
+    {
         if (buttonType == ButtonType.Play)
         {
-            // Replace "GameScene" with your actual game scene name.
+            // Replace "Cutscene1" with your actual game scene name.
             SceneManager.LoadScene("Cutscene1");
         }
         else if (buttonType == ButtonType.Quit)
@@ -62,15 +110,6 @@ public class ButtonController : MonoBehaviour
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #endif
-        }
-    }
-
-    // When the mouse button is released, revert back to the highlight color.
-    void OnMouseUp()
-    {
-        if (rend != null)
-        {
-            rend.material.color = highlightColor;
         }
     }
 }
