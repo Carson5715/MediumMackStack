@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.Timeline.Actions;
 
 public class FallingObject : MonoBehaviour
 {
@@ -146,6 +145,11 @@ public class FallingObject : MonoBehaviour
         {
             if (obj != null)
             {
+                // Skip objects that have been released (their rigidbodies are no longer kinematic).
+                Rigidbody rb = obj.GetComponent<Rigidbody>();
+                if (rb != null && !rb.isKinematic)
+                    continue;
+                    
                 Collider col = obj.GetComponent<Collider>();
                 float top = obj.transform.position.y;
                 if (col != null)

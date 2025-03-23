@@ -53,9 +53,17 @@ public class PlateController : MonoBehaviour
     private bool loseSceneLoaded = false;
     
     // Gyroscope calibration fields.
-    private bool gyroCalibrated = false;
+    // We assume gyro is available; calibration will occur externally.
+    private bool gyroCalibrated = true;
+    // This stores the baseline tilt (in degrees).
     private float initialTiltAngle = 0f;
-
+    // Maximum tilt (in degrees) for full left/right movement.
+    public float maxTilt = 10f;
+    // Recenter threshold (if tilt difference is less than this, update the baseline).
+    public float recenterThreshold = 1f;
+    // Recenter speed factor.
+    public float recenterSpeed = 2f;
+    
     // Singleton instance.
     public static PlateController Instance { get; private set; }
 
@@ -64,22 +72,14 @@ public class PlateController : MonoBehaviour
         Instance = this;
     }
     
-    // Enable the gyroscope if available and calibrate it.
+    // Enable the gyroscope if available.
     void Start()
     {
+        Input.gyro.enabled = true;
         if (SystemInfo.supportsGyroscope)
         {
             Input.gyro.enabled = true;
-            StartCoroutine(CalibrateGyro());
         }
-    }
-    
-    // Wait a moment before calibrating the initial tilt.
-    IEnumerator CalibrateGyro()
-    {
-        yield return new WaitForSeconds(0.5f);
-        initialTiltAngle = GetTiltAngle();
-        gyroCalibrated = true;
     }
     
     // Helper method to get the current tilt angle around the Z-axis.
@@ -102,19 +102,27 @@ public class PlateController : MonoBehaviour
         {
             float horizontalInput = 0f;
             
-            // Use gyroscope input if supported and calibrated.
+            // Use gyroscope input if supported and "calibrated" (baseline is set).
             if (SystemInfo.supportsGyroscope && gyroCalibrated)
             {
-                // Calculate relative tilt.
-                float tiltAngle = GetTiltAngle() - initialTiltAngle;
-                // Define a maximum tilt angle (in degrees) for full left/right movement.
-                float maxTilt = 10f;
-                // Normalize the tilt so that full left/right (i.e., -maxTilt to maxTilt) maps to -1 to 1.
-                horizontalInput = Mathf.Clamp(tiltAngle, -maxTilt, maxTilt) / maxTilt;
+                float currentTilt = GetTiltAngle();
+                float tiltDifference = currentTilt - initialTiltAngle;
+                
+                // If the difference is very small, assume you're not intentionally tilting.
+                // Slowly recenter the baseline.
+                if (Mathf.Abs(tiltDifference) < recenterThreshold)
+                {
+                    initialTiltAngle = Mathf.Lerp(initialTiltAngle, currentTilt, recenterSpeed * Time.deltaTime);
+                    // Recompute tilt difference after recentering.
+                    tiltDifference = currentTilt - initialTiltAngle;
+                }
+                
+                // Invert the direction if needed.
+                horizontalInput = -Mathf.Clamp(tiltDifference, -maxTilt, maxTilt) / maxTilt;
             }
             else
             {
-                // Fallback to keyboard input if gyroscope not available or not yet calibrated.
+                // Fallback to keyboard input.
                 horizontalInput = Input.GetAxis("Horizontal");
             }
             
@@ -239,14 +247,11 @@ public class PlateController : MonoBehaviour
     
     IEnumerator SpawnAndWaitAndLoadWinScene()
     {
-        // Spawn the win object at the specified spawn location.
         if (winSpawnPrefab != null && winSpawnLocation != null)
         {
             Instantiate(winSpawnPrefab, winSpawnLocation.position, winSpawnLocation.rotation);
         }
-        // Wait for winWaitTime seconds.
         yield return new WaitForSeconds(winWaitTime);
-        // Load the win scene.
         SceneManager.LoadScene(winSceneName);
     }
     
