@@ -35,7 +35,7 @@ public class PlateController : MonoBehaviour
     // Objects to disable on win.
     public List<GameObject> disableObjects;
     
-    // New: Public variables for win spawn.
+    // Public variables for win spawn.
     public GameObject winSpawnPrefab;          // The prefab to spawn when win condition is reached.
     public Transform winSpawnLocation;         // The location at which to spawn the prefab.
     
@@ -43,7 +43,7 @@ public class PlateController : MonoBehaviour
     public string winSceneName = "WinScene";
     public string loseSceneName = "LoseScene";
     
-    // New: How long to wait after spawning the win object before loading the win scene.
+    // How long to wait after spawning the win object before loading the win scene.
     public float winWaitTime = 5f;
     
     // Internal flags.
@@ -52,6 +52,10 @@ public class PlateController : MonoBehaviour
     private bool winSceneLoaded = false;
     private bool loseSceneLoaded = false;
     
+    // Gyroscope calibration fields.
+    private bool gyroCalibrated = false;
+    private float initialTiltAngle = 0f;
+
     // Singleton instance.
     public static PlateController Instance { get; private set; }
 
@@ -60,13 +64,35 @@ public class PlateController : MonoBehaviour
         Instance = this;
     }
     
-    // Enable the gyroscope if available.
+    // Enable the gyroscope if available and calibrate it.
     void Start()
     {
         if (SystemInfo.supportsGyroscope)
         {
             Input.gyro.enabled = true;
+            StartCoroutine(CalibrateGyro());
         }
+    }
+    
+    // Wait a moment before calibrating the initial tilt.
+    IEnumerator CalibrateGyro()
+    {
+        yield return new WaitForSeconds(0.5f);
+        initialTiltAngle = GetTiltAngle();
+        gyroCalibrated = true;
+    }
+    
+    // Helper method to get the current tilt angle around the Z-axis.
+    private float GetTiltAngle()
+    {
+        Quaternion deviceRotation = Input.gyro.attitude;
+        // Adjust for Unity's coordinate system.
+        deviceRotation = Quaternion.Euler(90f, 0f, 0f) * new Quaternion(-deviceRotation.x, -deviceRotation.y, deviceRotation.z, deviceRotation.w);
+        float tiltAngle = deviceRotation.eulerAngles.z;
+        // Convert from 0–360 to -180–180.
+        if (tiltAngle > 180f)
+            tiltAngle -= 360f;
+        return tiltAngle;
     }
     
     void Update()
@@ -76,18 +102,11 @@ public class PlateController : MonoBehaviour
         {
             float horizontalInput = 0f;
             
-            // Use gyroscope input if supported.
-            if (SystemInfo.supportsGyroscope)
+            // Use gyroscope input if supported and calibrated.
+            if (SystemInfo.supportsGyroscope && gyroCalibrated)
             {
-                // Get the device's gyroscope attitude.
-                Quaternion deviceRotation = Input.gyro.attitude;
-                // Adjust for Unity's coordinate system.
-                deviceRotation = Quaternion.Euler(90f, 0f, 0f) * new Quaternion(-deviceRotation.x, -deviceRotation.y, deviceRotation.z, deviceRotation.w);
-                // Extract the tilt angle around the Z-axis.
-                float tiltAngle = deviceRotation.eulerAngles.z;
-                // Convert from 0–360 to -180–180.
-                if (tiltAngle > 180f)
-                    tiltAngle -= 360f;
+                // Calculate relative tilt.
+                float tiltAngle = GetTiltAngle() - initialTiltAngle;
                 // Define a maximum tilt angle (in degrees) for full left/right movement.
                 float maxTilt = 10f;
                 // Normalize the tilt so that full left/right (i.e., -maxTilt to maxTilt) maps to -1 to 1.
@@ -95,7 +114,7 @@ public class PlateController : MonoBehaviour
             }
             else
             {
-                // Fallback to keyboard input if no gyroscope is available.
+                // Fallback to keyboard input if gyroscope not available or not yet calibrated.
                 horizontalInput = Input.GetAxis("Horizontal");
             }
             
