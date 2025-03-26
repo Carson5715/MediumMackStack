@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/RickyScene.unity
+    guid: 56a54e5166c1f1044b895196aa1b9b63
   m_configObjects:
     com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: a54b5d925d4e8444197f1f1123a1b18e, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 5911bd128cfa6264c9159338c60f6270, type: 2}
